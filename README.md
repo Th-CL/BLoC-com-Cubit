@@ -1,40 +1,177 @@
 ![Mobile-Aplicando BLoC com Cubit](https://github.com/alura-cursos/3033-bloc-com-cubit/assets/22684176/a1b98f40-085b-4a5c-ab7d-757bda996730)
 
-# Flutter: aplicando BLoC com Cubit
+# 🎬 Bilheteria Panucci - Flutter BLoC com Cubit
 
-## Implemente o gerenciador de estados BLoC com Cubit em seus projetos
+## Aplicativo completo com filtro por gênero implementado
 
-Curso da escola Mobile que fala sobre o gerenciador de estados BLoC com Cubit para Flutter. Os temas abordados são: Padrão de projetos BLoC, BlocBuilder e BlocProvider. 
+Este projeto implementa o **Bilheteria Panucci**, um aplicativo de cinema desenvolvido em Flutter usando o padrão BLoC/Cubit para gerenciamento de estado, baseado no curso da Alura.
 
-### Tópicos abordados no curso:
+## ✨ Funcionalidades Implementadas
 
-- Conceitos de gerenciamento de estados
-- Introdução ao BLoC com Cubit
-- Arquivos de estado
-- Arquivos Cubit
-- Configuração de um projeto no padrão BLoC
-- Injeção de dependência com BLoC
+- 🎭 **Listagem de filmes** com informações detalhadas
+- 🎯 **Filtro por gênero** (Todos, Ação, Comédia, Drama, Romance, Documentário, Suspense, Terror, Ficção Científica)
+- 🖼️ **Tratamento robusto de imagens** com loading e fallback para erros 404
+- 🎨 **Temas dinâmicos** baseados no gênero do filme
+- 📱 **Interface responsiva** e moderna
+- 🔄 **Estados de loading** e tratamento de erros
+- ⚡ **Carregamento local** de dados (sem dependência de rede)
 
-Este curso é indicado para pessoas desenvolvedoras que desejam aprender uma forma mais eficiente de gerenciar estados de seus aplicativos Flutter em sua jornada de desenvolvedor mobile. 
+## 🏗️ Arquitetura BLoC/Cubit
 
-## Requisitos:
+### Funcionalidades dos Cubits
 
-- Conhecimentos básicos de Flutter e Dart 
-- Android Studio ou VS Code (com plugins do Flutter e Dart instalados)
-- Conhecimento de gerenciamento de estados com Provider
-- É importante ter o Flutter na versão 3.7.9
+#### HomeCubit
+- `getMovies()`: Carrega todos os filmes
+- `getMoviesByGenre(String genre)`: Filtra filmes por gênero
+- Estados: `HomeInitial`, `HomeLoading`, `HomeSuccess`, `HomeError`
 
-Com este curso, você não só aprenderá a implementar o BLoC com Cubit em projetos Flutter, mas também melhorará sua compreensão de gerenciamento de estados em geral. Comece agora e aprimore seus conhecimentos de Flutter!
+#### ThemeCubit
+- `changeTheme(String genre)`: Altera tema baseado no gênero do filme
 
-## 🛠️ Abrir e rodar o projeto
+### Estados Implementados
+- **HomeLoading**: Exibe indicador de carregamento
+- **HomeSuccess**: Lista de filmes carregada
+- **HomeError**: Mensagem de erro (ex: "Não existem filmes na categoria escolhida!")
 
-Aqui vem um passo a passo para abrir e rodar o projeto.
+## 🛠️ Tecnologias e Versões
 
-- **Open an Existing Project** (ou alguma opção similar)
-- Procure o local onde o projeto está e o selecione (Caso o projeto seja baixado via zip, é necessário extraí-lo antes de procurá-lo)
-- Por fim clique em OK
-- Depois basta rodar o comando `flutter run` na pasta do projeto
+- **Flutter** 3.x
+- **Dart** 3.x
+- **flutter_bloc** ^8.1.2
+- **Java** 17 (Android)
+- **Android Gradle Plugin** 8.6.0
+- **Kotlin** 2.1.0
 
-## 📚 Mais informações do curso
+## 🚀 Como Executar
 
-Gostou do projeto e quer conhecer mais? Você pode [acessar o curso](link) que desenvolve o projeto desde o começo!
+### Pré-requisitos
+- Flutter SDK
+- Java 17 instalado
+- Android Studio ou VS Code
+
+### Instalação
+
+1. Clone o repositório:
+```bash
+git clone https://github.com/Th-CL/BLoC-com-Cubit.git
+cd BLoC-com-Cubit
+```
+
+2. Instale as dependências:
+```bash
+flutter pub get
+```
+
+3. Execute o aplicativo:
+```bash
+flutter run
+```
+
+## 📱 Como Usar
+
+1. **Tela Principal**: Visualize todos os filmes em um grid
+2. **Filtro por Gênero**: Use o dropdown para filtrar filmes por categoria
+3. **Detalhes do Filme**: Toque em um filme para ver detalhes completos
+4. **Tratamento de Erro**: Imagens indisponíveis mostram um placeholder
+
+## 🎯 Destaques da Implementação
+
+### ✅ Sistema de Filtros Avançado
+```dart
+Future<void> getMoviesByGenre(String genre) async {
+  emit(HomeLoading());
+  try {
+    if (genre == 'Todos') {
+      final movies = await homeService.fetchMovies();
+      emit(HomeSuccess(movies));
+    } else {
+      final movies = await homeService.fetchMoviesByGenre(genre);
+      if (movies.isEmpty) {
+        emit(HomeError('Não existem filmes na categoria escolhida!'));
+      } else {
+        emit(HomeSuccess(movies));
+      }
+    }
+  } catch(e) {
+     emit(HomeError('Não foi possível carregar a lista de filmes!'));
+  }
+}
+```
+
+### ✅ Tratamento Robusto de Imagens
+```dart
+Image.network(
+  movie.imageURI!,
+  errorBuilder: (context, error, stackTrace) {
+    return Container(
+      child: Column(
+        children: [
+          Icon(Icons.movie, color: Colors.grey),
+          Text('Imagem não disponível'),
+        ],
+      ),
+    );
+  },
+)
+```
+
+### ✅ Configuração Moderna do Android
+- Java 17 configurado
+- Android Gradle Plugin 8.6.0
+- Kotlin 2.1.0
+- Namespace configurado corretamente
+
+## 📁 Estrutura do Projeto
+
+```
+lib/
+├── components/
+│   ├── home/
+│   │   └── genre_filter.dart     # Filtro por gênero
+│   ├── movie_screen/             # Componentes de detalhes
+│   └── movie_card.dart           # Card de filme
+├── logic/cubit/
+│   ├── home_cubit.dart           # Gerenciamento da tela principal
+│   ├── home_states.dart          # Estados da aplicação
+│   └── theme_cubit.dart          # Gerenciamento de temas
+├── models/
+│   └── movie.dart                # Modelo de dados
+├── screens/
+│   ├── home.dart                 # Tela principal
+│   └── movie_screen.dart         # Tela de detalhes
+├── services/
+│   └── movies_api.dart           # Serviço de dados
+└── movies.json                   # Base de dados local
+```
+
+## 🔄 Melhorias Implementadas
+
+- **Carregamento Local**: Dados carregados de arquivo JSON local
+- **Tratamento de Erro 404**: Fallback para imagens quebradas
+- **Estados Específicos**: Mensagens personalizadas para cada situação
+- **Performance**: Uso de `Expanded` e `mainAxisSize.min` para otimizar layout
+- **Logs de Debug**: Informações detalhadas para troubleshooting
+
+## � Próximas Melhorias
+
+- [ ] Cache de imagens
+- [ ] Pesquisa por nome
+- [ ] Favoritos
+- [ ] Filtros múltiplos
+- [ ] Animações de transição
+
+## 🤝 Baseado no Curso
+
+Este projeto foi desenvolvido como parte do curso **"Flutter: aplicando BLoC com Cubit"** da [Alura](https://alura.com.br), com implementações adicionais e melhorias.
+
+### Tópicos do curso aplicados:
+- ✅ Conceitos de gerenciamento de estados
+- ✅ Introdução ao BLoC com Cubit
+- ✅ Arquivos de estado e Cubit
+- ✅ Configuração completa do projeto BLoC
+- ✅ Injeção de dependência com BLocProvider
+- ✅ BlocBuilder para reatividade da UI
+
+---
+
+⭐ **Se este projeto te ajudou, considere dar uma estrela no repositório!**
